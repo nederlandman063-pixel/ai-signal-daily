@@ -1,0 +1,1 @@
+export default function Loading(){return <main className="loading-page" aria-label="Загрузка выпуска"><div className="skeleton sk-kicker"/><div className="skeleton sk-title"/><div className="skeleton sk-copy"/><div className="skeleton sk-hero"/><div className="sk-grid"><div className="skeleton"/><div className="skeleton"/></div></main>}
