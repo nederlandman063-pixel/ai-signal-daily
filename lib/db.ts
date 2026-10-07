@@ -56,6 +56,7 @@ export async function getIssue(date:string): Promise<Issue | null> {
   if (demoOnly()) return archiveIssues.find(i=>i.date===date) ?? null;
   return loadIssue(date);
 }
+export async function getStoredIssue(date:string): Promise<Issue | null> { return loadIssue(date); }
 export async function getStory(slug:string): Promise<Story | null> {
   if (demoOnly()) return archiveIssues.flatMap(i=>i.stories).find(s=>s.slug===slug) ?? null;
   if (!process.env.DATABASE_URL) return null;
