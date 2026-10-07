@@ -6,7 +6,7 @@ import { archiveIssues, currentIssue } from "./sample-data";
 let client: ReturnType<typeof postgres> | undefined;
 function sql() {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL_NOT_CONFIGURED");
-  return client ??= postgres(process.env.DATABASE_URL, { max: 5, idle_timeout: 20, connect_timeout: 10, ssl: "require" });
+  return client ??= postgres(process.env.DATABASE_URL, { max: 5, idle_timeout: 20, connect_timeout: 10, ssl: process.env.NODE_ENV === "production" || process.env.DATABASE_URL.includes("sslmode=require") ? "require" : false });
 }
 
 export async function insertIssue(payload: EditorialPayload) {

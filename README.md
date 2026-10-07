@@ -10,7 +10,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Создайте PostgreSQL и примените `db/migrations/001_initial.sql`. Сгенерируйте `AUTH_SECRET` командой `npx auth secret`. Хэш пароля владельца можно получить командой `node -e "require('bcryptjs').hash(process.argv[1], 12).then(console.log)" 'your-long-password'` и положить в `ADMIN_PASSWORD_HASH`. Для локальной визуальной разработки допустимо временно запустить `AUTH_BYPASS_LOCAL=1 npm run dev`; эта ветка кода работает только при `NODE_ENV=development` и показывает явно помеченный вымышленный образец. Production без базы показывает пустое состояние до первой публикации.
+Создайте PostgreSQL и примените `db/migrations/001_initial.sql`. Сгенерируйте `AUTH_SECRET` командой `npx auth secret`. Сформируйте bcrypt-хэш пароля владельца с cost 12 или выше в доверенной среде и задайте его как `ADMIN_PASSWORD_HASH`; не вводите сам пароль аргументом команды, чтобы он не сохранился в истории shell. Для локальной визуальной разработки допустимо временно запустить `AUTH_BYPASS_LOCAL=1 npm run dev`; эта ветка кода работает только при `NODE_ENV=development` и показывает явно помеченный вымышленный образец. Production без базы показывает пустое состояние до первой публикации.
 
 ## Переменные окружения
 
