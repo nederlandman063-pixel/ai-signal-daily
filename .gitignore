@@ -1,0 +1,23 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+credentials*.json
+secrets/
+
+# dependencies and output
+node_modules/
+.next/
+out/
+coverage/
+.vercel/
+*.tsbuildinfo
+npm-debug.log*
+
+# local tooling
+.DS_Store
+*.local
+screenshots/
