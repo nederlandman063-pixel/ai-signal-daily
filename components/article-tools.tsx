@@ -1,0 +1,4 @@
+"use client";
+import { useEffect, useState } from "react";
+export function ReadingProgress(){const [value,setValue]=useState(0);useEffect(()=>{const run=()=>{const max=document.documentElement.scrollHeight-innerHeight;setValue(max?scrollY/max:0)};run();addEventListener("scroll",run,{passive:true});return()=>removeEventListener("scroll",run)},[]);return <div className="progress" style={{transform:`scaleX(${value})`}}/>}
+export function ShareButton({title}:{title:string}){const [done,setDone]=useState(false);const share=async()=>{try{if(navigator.share)await navigator.share({title,url:location.href});else await navigator.clipboard.writeText(location.href);setDone(true);setTimeout(()=>setDone(false),1800)}catch(error){if((error as Error).name!=="AbortError")console.error("Share failed",error)}};return <button className="article-share" onClick={share}>{done?"ССЫЛКА СКОПИРОВАНА":"ПОДЕЛИТЬСЯ"} <span>⌁</span></button>}
