@@ -46,7 +46,7 @@ async function loadIssue(where: "latest" | string): Promise<Issue | null> {
   return mapIssue(rows[0] as Row, stories as unknown as Row[]);
 }
 
-function demoOnly() { return process.env.NODE_ENV === "development" && process.env.AUTH_BYPASS_LOCAL === "1" && !process.env.DATABASE_URL; }
+function demoOnly() { return process.env.NODE_ENV === "development" && !process.env.DATABASE_URL; }
 
 export async function getLatestIssue(): Promise<Issue | null> {
   if (demoOnly()) return currentIssue;
