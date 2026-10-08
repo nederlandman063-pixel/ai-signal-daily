@@ -74,7 +74,10 @@ export async function getArchive(page=1): Promise<{items:ArchiveEntry[];hasMore:
 }
 
 export async function searchStories(query:string) {
-  if (demoOnly()) return archiveIssues.flatMap(i=>i.stories).filter(s=>[s.title,s.body,s.category,...s.sources.map(x=>x.label)].join(" ").toLowerCase().includes(query.toLowerCase())).slice(0,20).map(s=>({slug:s.slug,title:s.title,category:s.category}));
+  if (demoOnly()) {
+    const matching = archiveIssues.flatMap(i=>i.stories).filter(s=>[s.title,s.body,s.category,...s.sources.map(x=>x.label)].join(" ").toLowerCase().includes(query.toLowerCase()));
+    return [...new Map(matching.map(s=>[s.slug,{slug:s.slug,title:s.title,category:s.category}])).values()].slice(0,20);
+  }
   if (!process.env.DATABASE_URL) return [];
   const db=sql(); const pattern=`%${query}%`;
   const rows=await db`SELECT DISTINCT s.slug,s.title,s.category FROM stories s LEFT JOIN sources so ON so.story_id=s.id WHERE s.title ILIKE ${pattern} OR s.body ILIKE ${pattern} OR s.category::text ILIKE ${pattern} OR so.label ILIKE ${pattern} OR so.url ILIKE ${pattern} ORDER BY s.title LIMIT 20`;
