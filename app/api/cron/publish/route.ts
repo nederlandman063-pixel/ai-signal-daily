@@ -18,10 +18,13 @@ export function publicationFailureCode(error: unknown) {
   if (name === "ZodError" || name.includes("NoObjectGenerated")) {
     return "EDITORIAL_VALIDATION";
   }
-  if (message.startsWith("SOURCE_NOT_VERIFIED_BY_SEARCH:")) {
+  if (
+    message === "SOURCE_NOT_VERIFIED_BY_FEED" ||
+    message === "AUTOMATED_SOURCE_MUST_BE_PRIMARY"
+  ) {
     return "SOURCE_PROVENANCE";
   }
-  if (message === "WEB_RESEARCH_RETURNED_NO_SOURCES") {
+  if (message === "OFFICIAL_FEEDS_RETURNED_NO_RECENT_ITEMS") {
     return "EMPTY_RESEARCH";
   }
   if (/customer_verification_required/i.test(message)) {
