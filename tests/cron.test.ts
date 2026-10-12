@@ -45,7 +45,7 @@ describe("cron failure diagnostics", () => {
   it("classifies source and editorial validation failures", () => {
     expect(
       publicationFailureCode(
-        new Error("SOURCE_NOT_VERIFIED_BY_SEARCH:https://example.com"),
+        new Error("SOURCE_NOT_VERIFIED_BY_FEED"),
       ),
     ).toBe("SOURCE_PROVENANCE");
     const validation = new Error("invalid output");
