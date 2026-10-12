@@ -6,7 +6,7 @@ vi.mock("@/lib/db", () => ({
   insertIssue: vi.fn(),
 }));
 
-import { GET } from "@/app/api/cron/publish/route";
+import { GET, publicationFailureCode } from "@/app/api/cron/publish/route";
 import { getStoredIssue } from "@/lib/db";
 
 describe("daily cron route", () => {
@@ -32,5 +32,24 @@ describe("daily cron route", () => {
     );
     expect(response.status).toBe(200);
     expect((await response.json()).result.status).toBe("already-published");
+  });
+});
+
+describe("cron failure diagnostics", () => {
+  it("exposes only a stable gateway status code", () => {
+    expect(publicationFailureCode({ statusCode: 403, secret: "hidden" })).toBe(
+      "AI_GATEWAY_403",
+    );
+  });
+
+  it("classifies source and editorial validation failures", () => {
+    expect(
+      publicationFailureCode(
+        new Error("SOURCE_NOT_VERIFIED_BY_SEARCH:https://example.com"),
+      ),
+    ).toBe("SOURCE_PROVENANCE");
+    const validation = new Error("invalid output");
+    validation.name = "ZodError";
+    expect(publicationFailureCode(validation)).toBe("EDITORIAL_VALIDATION");
   });
 });

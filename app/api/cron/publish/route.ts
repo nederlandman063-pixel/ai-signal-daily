@@ -6,6 +6,33 @@ import { verifyBearer } from "@/lib/security";
 
 export const maxDuration = 300;
 
+export function publicationFailureCode(error: unknown) {
+  const statusCode =
+    error && typeof error === "object" && "statusCode" in error
+      ? Number((error as { statusCode?: unknown }).statusCode)
+      : undefined;
+  if (statusCode && Number.isInteger(statusCode)) return `AI_GATEWAY_${statusCode}`;
+
+  const name = error instanceof Error ? error.name : "";
+  const message = error instanceof Error ? error.message : "";
+  if (name === "ZodError" || name.includes("NoObjectGenerated")) {
+    return "EDITORIAL_VALIDATION";
+  }
+  if (message.startsWith("SOURCE_NOT_VERIFIED_BY_SEARCH:")) {
+    return "SOURCE_PROVENANCE";
+  }
+  if (message === "WEB_RESEARCH_RETURNED_NO_SOURCES") {
+    return "EMPTY_RESEARCH";
+  }
+  if (/customer_verification_required/i.test(message)) {
+    return "AI_GATEWAY_VERIFICATION_REQUIRED";
+  }
+  if (/insufficient_funds|quota_for_entity_exceeded/i.test(message)) {
+    return "AI_GATEWAY_CREDITS_REQUIRED";
+  }
+  return "UNKNOWN";
+}
+
 export async function GET(request: Request) {
   if (!verifyBearer(request.headers.get("authorization"), process.env.CRON_SECRET)) {
     return NextResponse.json(
@@ -23,9 +50,10 @@ export async function GET(request: Request) {
     });
     return NextResponse.json({ ok: true, result });
   } catch (error) {
+    const reason = publicationFailureCode(error);
     console.error(
       "Daily publication failed",
-      error instanceof Error ? error.message : "unknown",
+      reason,
     );
     return NextResponse.json(
       {
@@ -33,6 +61,7 @@ export async function GET(request: Request) {
         error: {
           code: "PUBLICATION_FAILED",
           message: "Автоматический выпуск не опубликован: проверка качества не пройдена",
+          reason,
         },
       },
       { status: 500 },
